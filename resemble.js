@@ -25,6 +25,14 @@ URL: https://github.com/Huddle/Resemble.js
 		var ignoreAntialiasing = false;
 		var ignoreColors = false;
 
+		var workersCount = 4;
+		var worker = [
+			new Worker("worker.js"),
+			new Worker("worker.js"),
+			new Worker("worker.js"),
+			new Worker("worker.js")
+		];
+
 		function triggerDataUpdate(){
 			var len = updateCallbackArray.length;
 			var i;
@@ -76,6 +84,10 @@ URL: https://github.com/Huddle/Resemble.js
 			triggerDataUpdate();
 		}
 
+		function getBrightness(r,g,b){
+			return 0.3*r + 0.59*g + 0.11*b;
+		}
+
 		function loadImageData( fileData, callback ){
 			var fileReader;
 			var hiddenImage = new Image();
@@ -108,189 +120,7 @@ URL: https://github.com/Huddle/Resemble.js
 			}
 		}
 
-		function isColorSimilar(a, b, color){
-
-			var absDiff = Math.abs(a - b);
-
-			if(typeof a === 'undefined'){
-				return false;
-			}
-			if(typeof b === 'undefined'){
-				return false;
-			}
-
-			if(a === b){
-				return true;
-			} else if ( absDiff < tolerance[color] ) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		function isNumber(n) {
-			return !isNaN(parseFloat(n));
-		}
-
-		function isPixelBrightnessSimilar(d1, d2){
-			return Math.abs(d1.brightness - d2.brightness) < tolerance.minBrightness;
-		}
-
-		function getBrightness(r,g,b){
-			return 0.3*r + 0.59*g + 0.11*b;
-		}
-
-		function isRGBSame(d1,d2){
-			var red = d1.r === d2.r;
-			var green = d1.g === d2.g;
-			var blue = d1.b === d2.b;
-			return red && green && blue;
-		}
-
-		function isRGBSimilar(d1, d2){
-			var red = isColorSimilar(d1.r,d2.r,'red');
-			var green = isColorSimilar(d1.g,d2.g,'green');
-			var blue = isColorSimilar(d1.b,d2.b,'blue');
-
-			return red && green && blue;
-		}
-
-		function isContrasting(d1, d2){
-			return Math.abs(d1.brightness - d2.brightness) > tolerance.maxBrightness;
-		}
-
-		function getHue(r,g,b){
-
-			r = r / 255;
-			g = g / 255;
-			b = b / 255;
-			var max = Math.max(r, g, b), min = Math.min(r, g, b);
-			var h;
-			var d;
-
-			if (max == min){
-				h = 0; // achromatic
-			} else{
-				d = max - min;
-				switch(max){
-					case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-					case g: h = (b - r) / d + 2; break;
-					case b: h = (r - g) / d + 4; break;
-				}
-				h /= 6;
-			}
-
-			return h;
-		}
-
-		function isAntialiased(sourcePix, data, cacheSet, verticalPos, horizontalPos, width){
-			var offset;
-			var targetPix;
-			var distance = 1;
-			var i;
-			var j;
-			var hasHighContrastSibling = 0;
-			var hasSiblingWithDifferentHue = 0;
-			var hasEquivilantSibling = 0;
-
-			addHueInfo(sourcePix);
-
-			for (i = distance*-1; i <= distance; i++){
-				for (j = distance*-1; j <= distance; j++){
-
-					if(i===0 && j===0){
-						// ignore source pixel
-					} else {
-
-						offset = ((verticalPos+j)*width + (horizontalPos+i)) * 4;
-						targetPix = getPixelInfo(data, offset, cacheSet);
-
-						if(targetPix === null){
-							continue;
-						}
-
-						addBrightnessInfo(targetPix);
-						addHueInfo(targetPix);
-
-						if( isContrasting(sourcePix, targetPix) ){
-							hasHighContrastSibling++;
-						}
-
-						if( isRGBSame(sourcePix,targetPix) ){
-							hasEquivilantSibling++;
-						}
-
-						if( Math.abs(targetPix.h - sourcePix.h) > 0.3 ){
-							hasSiblingWithDifferentHue++;
-						}
-
-						if( hasSiblingWithDifferentHue > 1 || hasHighContrastSibling > 1){
-							return true;
-						}
-					}
-				}
-			}
-
-			if(hasEquivilantSibling < 2){
-				return true;
-			}
-
-			return false;
-		}
-
-		function errorPixel(px, offset){
-			px[offset] = 255; //r
-			px[offset + 1] = 0; //g
-			px[offset + 2] = 255; //b
-			px[offset + 3] = 255; //a
-		}
-
-		function copyPixel(px, offset, data){
-			px[offset] = data.r; //r
-			px[offset + 1] = data.g; //g
-			px[offset + 2] = data.b; //b
-			px[offset + 3] = 255; //a
-		}
-
-		function copyGrayScalePixel(px, offset, data){
-			px[offset] = data.brightness; //r
-			px[offset + 1] = data.brightness; //g
-			px[offset + 2] = data.brightness; //b
-			px[offset + 3] = 255; //a
-		}
-
-
-		function getPixelInfo(data, offset, cacheSet){
-			var r;
-			var g;
-			var b;
-			var d;
-
-			if(typeof data[offset] !== 'undefined'){
-				r = data[offset];
-				g = data[offset+1];
-				b = data[offset+2];
-				d = {
-					r: r,
-					g: g,
-					b: b
-				};
-
-				return d;
-			} else {
-				return null;
-			}
-		}
-
-		function addBrightnessInfo(data){
-			data.brightness = getBrightness(data.r,data.g,data.b); // 'corrected' lightness
-		}
-
-		function addHueInfo(data){
-			data.h = getHue(data.r,data.g,data.b);
-		}
-
-		function analyseImages(img1, img2, width, height){
+		function analyseImages(img1, img2, width, height, callback){
 
 			var hiddenCanvas = document.createElement('canvas');
 
@@ -301,10 +131,6 @@ URL: https://github.com/Huddle/Resemble.js
 			hiddenCanvas.height = height;
 
 			var context = hiddenCanvas.getContext('2d');
-			var imgd = context.createImageData(width,height);
-			var targetPix = imgd.data;
-
-			var mismatchCount = 0;
 
 			var time = Date.now();
 
@@ -314,73 +140,86 @@ URL: https://github.com/Huddle/Resemble.js
 				skip = 6;
 			}
 
-			loop(height, width, function(verticalPos, horizontalPos){
+			var finished = 0;
+			var putImageDataArr = [];
+			var mismatchCount = 0;
 
-				if(skip){ // only skip if the image isn't small
-					if(verticalPos % skip === 0 || horizontalPos % skip === 0){
-						return;
+			function whenDone(){
+
+				if(finished < workersCount) { return; }
+
+				data.misMatchPercentage = (mismatchCount / (height*width) * 100).toFixed(2);
+				data.analysisTime = Date.now() - time;
+
+				data.getImageDataUrl = function(text){
+					var barHeight = 0;
+
+					if(text){
+						barHeight = addLabel(text,context,hiddenCanvas);
 					}
-				}
 
-				var offset = (verticalPos*width + horizontalPos) * 4;
-				var pixel1 = getPixelInfo(data1, offset, 1);
-				var pixel2 = getPixelInfo(data2, offset, 2);
+					putImageDataArr.forEach(function(func){
+						func(barHeight);
+					});
 
-				if(pixel1 === null || pixel2 === null){
-					return;
-				}
+					return hiddenCanvas.toDataURL("image/png");
+				};
 
-				if (ignoreColors){
+				callback();
+			}
 
-					addBrightnessInfo(pixel1);
-					addBrightnessInfo(pixel2);
+			function onWorkEnded(e) {
 
-					if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-						copyGrayScalePixel(targetPix, offset, pixel2);
-					} else {
-						errorPixel(targetPix, offset);
-						mismatchCount++;
+				var canvasData = e.data.result;
+				var index = e.data.index;
+
+				mismatchCount += e.data.mismatch;
+
+				putImageDataArr.push(function(offset){
+					var imgData = context.createImageData(e.data.width, e.data.height);
+					imgData.data.set(canvasData);
+					context.putImageData(imgData, 0, (height / workersCount * index)+offset);
+				});
+
+				finished++;
+
+				whenDone();
+			}
+
+			launchWorkers(data1, data2, width, height, skip, onWorkEnded);
+		}
+
+		function launchWorkers(data1, data2, width, height, skip, onWorkEnded){
+			var range = Math.floor(height/workersCount)*width*4;
+			var index = 0;
+			var d1start, d1slice, d2start, d2slice;
+
+			for (; index < workersCount; index++) {
+
+				worker[index].onmessage = onWorkEnded;
+
+				d1start = !index ? index : index*range;
+				d1slice = new Uint8ClampedArray( data1.buffer.slice(d1start, d1start + range) );
+
+				d2start = !index ? index : index*range;
+				d2slice = new Uint8ClampedArray( data2.buffer.slice(d2start, d2start + range));
+
+				worker[index].postMessage(
+					{
+						height: Math.floor(height/workersCount),
+						width: width,
+						skip: skip,
+						data1: d1slice,
+						data2: d2slice,
+						index: index,
+						settings : {
+							tolerance: tolerance,
+							ignoreAntialiasing: ignoreAntialiasing,
+							ignoreColors: ignoreColors
+						}
 					}
-					return;
-				}
-
-				if( isRGBSimilar(pixel1, pixel2) ){
-					copyPixel(targetPix, offset, pixel2);
-
-				} else if( ignoreAntialiasing && (
-						addBrightnessInfo(pixel1), // jit pixel info augmentation looks a little weird, sorry.
-						addBrightnessInfo(pixel2),
-						isAntialiased(pixel1, data1, 1, verticalPos, horizontalPos, width) ||
-						isAntialiased(pixel2, data2, 2, verticalPos, horizontalPos, width)
-					)){
-
-					if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-						copyGrayScalePixel(targetPix, offset, pixel2);
-					} else {
-						errorPixel(targetPix, offset);
-						mismatchCount++;
-					}
-				} else {
-					errorPixel(targetPix, offset);
-					mismatchCount++;
-				}
-
-			});
-
-			data.misMatchPercentage = (mismatchCount / (height*width) * 100).toFixed(2);
-			data.analysisTime = Date.now() - time;
-
-			data.getImageDataUrl = function(text){
-				var barHeight = 0;
-
-				if(text){
-					barHeight = addLabel(text,context,hiddenCanvas);
-				}
-
-				context.putImageData(imgd, 0, barHeight);
-
-				return hiddenCanvas.toDataURL("image/png");
-			};
+				);
+			}
 		}
 
 		function addLabel(text, context, hiddenCanvas){
@@ -441,9 +280,13 @@ URL: https://github.com/Huddle/Resemble.js
 						data.isSameDimensions = false;
 					}
 
-					analyseImages( normalise(images[0],width, height), normalise(images[1],width, height), width, height);
-
-					triggerDataUpdate();
+					analyseImages(
+						normalise(images[0],width, height),
+						normalise(images[1],width, height),
+						width,
+						height,
+						triggerDataUpdate
+					);
 				}
 			}
 
