@@ -208,10 +208,9 @@ function copyGrayScalePixel(px, offset, data){
 	px[offset + 3] = 255; //a
 }
 
-function parseData(height, width, skip, data1, data2){
+function parseData(height, width, skip, data1, data2, targetPix){
 
 	var mismatchCount = 0;
-	var targetPix = new Uint8ClampedArray(width*height*4);
 
 	loop(height, width, function(verticalPos, horizontalPos){
 

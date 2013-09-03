@@ -12,7 +12,7 @@ self.onmessage = function (e) {
     ignoreAntialiasing = e.data.settings.ignoreAntialiasing;
     ignoreColors = e.data.settings.ignoreColors;
 index = e.data.index;
-    var ret = parseData(e.data.height, e.data.width, e.data.skip, e.data.data1, e.data.data2);
+    var ret = parseData(e.data.height, e.data.width, e.data.skip, e.data.data1, e.data.data2, e.data.dataStub);
 
     self.postMessage({
         width: e.data.width,

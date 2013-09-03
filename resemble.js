@@ -120,12 +120,9 @@ URL: https://github.com/Huddle/Resemble.js
 			}
 		}
 
-		function analyseImages(img1, img2, width, height, callback){
+		function analyseImages(ctxt1, ctxt2, width, height, callback){
 
 			var hiddenCanvas = document.createElement('canvas');
-
-			var data1 = img1.data;
-			var data2 = img2.data;
 
 			hiddenCanvas.width = width;
 			hiddenCanvas.height = height;
@@ -186,23 +183,25 @@ URL: https://github.com/Huddle/Resemble.js
 				whenDone();
 			}
 
-			launchWorkers(data1, data2, width, height, skip, onWorkEnded);
+			launchWorkers(ctxt1, ctxt2, width, height, skip, onWorkEnded);
 		}
 
-		function launchWorkers(data1, data2, width, height, skip, onWorkEnded){
-			var range = Math.floor(height/workersCount)*width*4;
+		function launchWorkers(ctxt1, ctxt2, width, height, skip, onWorkEnded){
+			var range = Math.floor(height/workersCount);
 			var index = 0;
-			var d1start, d1slice, d2start, d2slice;
+			var d1slice, d2slice;
+
+ 			var c = document.createElement('canvas');
+			c.width = width;
+			c.height = range;
+			var rtCtxt = c.getContext('2d');
 
 			for (; index < workersCount; index++) {
 
 				worker[index].onmessage = onWorkEnded;
 
-				d1start = !index ? index : index*range;
-				d1slice = new Uint8ClampedArray( data1.buffer.slice(d1start, d1start + range) );
-
-				d2start = !index ? index : index*range;
-				d2slice = new Uint8ClampedArray( data2.buffer.slice(d2start, d2start + range));
+				d1slice =  ctxt1.getImageData(0, range*index, width, range+range*index).data;
+				d2slice = ctxt2.getImageData(0, range*index, width, range+range*index).data;
 
 				worker[index].postMessage(
 					{
@@ -211,6 +210,7 @@ URL: https://github.com/Huddle/Resemble.js
 						skip: skip,
 						data1: d1slice,
 						data2: d2slice,
+						dataStub: rtCtxt.getImageData(0,0,width,range).data,
 						index: index,
 						settings : {
 							tolerance: tolerance,
@@ -253,16 +253,16 @@ URL: https://github.com/Huddle/Resemble.js
 			var c;
 			var context;
 
-			if(img.height < h || img.width < w){
+			//if(img.height < h || img.width < w){
 				c = document.createElement('canvas');
 				c.width = w;
 				c.height = h;
 				context = c.getContext('2d');
 				context.putImageData(img, 0, 0);
-				return context.getImageData(0, 0, w, h);
-			}
+				return context;
+			//}
 
-			return img;
+			//return img;
 		}
 
 		function compare(one, two){
