@@ -25,13 +25,14 @@ URL: https://github.com/Huddle/Resemble.js
 		var ignoreAntialiasing = false;
 		var ignoreColors = false;
 
-		var workersCount = 4;
-		var worker = [
-			new Worker("worker.js"),
-			new Worker("worker.js"),
-			new Worker("worker.js"),
-			new Worker("worker.js")
-		];
+		var workersCount = 1;
+
+		var worker = new Array(workersCount);
+		var i;
+
+		for (i = 0; i < workersCount; i++){
+			worker[i] = new Worker("worker.js");
+		}
 
 		function triggerDataUpdate(){
 			var len = updateCallbackArray.length;
@@ -174,7 +175,11 @@ URL: https://github.com/Huddle/Resemble.js
 
 				putImageDataArr.push(function(offset){
 					var imgData = context.createImageData(e.data.width, e.data.height);
-					imgData.data.set(canvasData);
+					if(imgData.data.set){
+						imgData.data.set(canvasData);
+					} else {
+						imgData.data = canvasData;
+					}
 					context.putImageData(imgData, 0, (height / workersCount * index)+offset);
 				});
 
