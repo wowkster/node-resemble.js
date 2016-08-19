@@ -430,6 +430,14 @@ var _this = {};
 			data.getDiffImage = function(text){
         return imgd;
 			};
+
+			data.getDiffImageAsJPEG = function(quality) {
+				return jpeg.encode({
+				  data: targetPix,
+				  width: img1.width,
+				  height: img1.height
+				}, quality !== undefined ? quality : 50).data;
+			};
 		}
 
 		function compare(one, two){
