@@ -356,13 +356,22 @@ var _this = {};
 
 			loop(height, width, function(verticalPos, horizontalPos){
 
+				var offset = (verticalPos*width + horizontalPos) * 4;
+
 				if(skip){ // only skip if the image isn't small
 					if(verticalPos % skip === 0 || horizontalPos % skip === 0){
+
+						copyPixel(targetPix, offset, {
+							red: 0,
+							blue: 0,
+							green: 0,
+							alpha: 0
+						});
+
 						return;
 					}
 				}
 
-				var offset = (verticalPos*width + horizontalPos) * 4;
 				var pixel1 = getPixelInfo(data1, offset, 1);
 				var pixel2 = getPixelInfo(data2, offset, 2);
 
