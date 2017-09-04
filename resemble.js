@@ -424,7 +424,8 @@ var _this = {};
 
 			});
 
-			data.misMatchPercentage = (mismatchCount / (height*width) * 100).toFixed(2);
+			data.rawMisMatchPercentage = (mismatchCount / (height*width) * 100);
+			data.misMatchPercentage = data.rawMisMatchPercentage.toFixed(2);
 			data.analysisTime = Date.now() - time;
 
 			data.getDiffImage = function(text){
