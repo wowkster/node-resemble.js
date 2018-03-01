@@ -38,7 +38,7 @@ var _this = {};
 			}
 		}
 	};
-	
+
 	var errorPixelTransformer = errorPixelTransform.flat;
 	var largeImageThreshold = 1200;
 
@@ -362,10 +362,10 @@ var _this = {};
 					if(verticalPos % skip === 0 || horizontalPos % skip === 0){
 
 						copyPixel(targetPix, offset, {
-							red: 0,
-							blue: 0,
-							green: 0,
-							alpha: 0
+							r: 0,
+							b: 0,
+							g: 0,
+							a: 0
 						});
 
 						return;
@@ -411,7 +411,7 @@ var _this = {};
 				}
 
 				if( isRGBSimilar(pixel1, pixel2) ){
-					copyPixel(targetPix, offset, pixel1, pixel2);
+					copyPixel(targetPix, offset, pixel1);
 
 				} else if( ignoreAntialiasing && (
 						addBrightnessInfo(pixel1), // jit pixel info augmentation looks a little weird, sorry.
@@ -588,7 +588,7 @@ var _this = {};
 		if(options.errorType && errorPixelTransform[options.errorType] ){
 			errorPixelTransformer = errorPixelTransform[options.errorType];
 		}
-		
+
 		pixelTransparency = options.transparency || pixelTransparency;
 
 		if (options.largeImageThreshold !== undefined) {
