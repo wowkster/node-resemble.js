@@ -4,23 +4,23 @@ URL: https://github.com/Huddle/Resemble.js
 */
 'use strict';
 
-var PNG = require('pngjs').PNG;
-var fs = require('fs');
-var jpeg = require('jpeg-js');
+const PNG = require('pngjs').PNG;
+const fs = require('fs');
+const jpeg = require('jpeg-js');
 
 //keeping wrong indentation and '_this' for better diff with origin resemble.js
-var _this = {};
+let _this = {};
 
-	var pixelTransparency = 1;
+	let pixelTransparency = 1;
 
-	var errorPixelColor = { // Color for Error Pixels. Between 0 and 255.
+	let errorPixelColor = { // Color for Error Pixels. Between 0 and 255.
 		red: 255,
 		green: 0,
 		blue: 255,
 		alpha: 255
 	};
 
-	var errorPixelTransform = {
+	let errorPixelTransform = {
 		flat : function (d1, d2){
 			return {
 				r: errorPixelColor.red,
@@ -39,16 +39,16 @@ var _this = {};
 		}
 	};
 
-	var errorPixelTransformer = errorPixelTransform.flat;
-	var largeImageThreshold = 1200;
+	let errorPixelTransformer = errorPixelTransform.flat;
+	let largeImageThreshold = 1200;
 
 	_this['resemble'] = function( fileData ){
 
-		var data = {};
-		var images = [];
-		var updateCallbackArray = [];
+		let data = {};
+		let images = [];
+		let updateCallbackArray = [];
 
-		var tolerance = { // between 0 and 255
+		let tolerance = { // between 0 and 255
 			red: 16,
 			green: 16,
 			blue: 16,
@@ -57,13 +57,13 @@ var _this = {};
 			maxBrightness: 240
 		};
 
-		var ignoreAntialiasing = false;
-		var ignoreColors = false;
-    var ignoreRectangles = null;
+		let ignoreAntialiasing = false;
+		let ignoreColors = false;
+    let ignoreRectangles = null;
 
 		function triggerDataUpdate(){
-			var len = updateCallbackArray.length;
-			var i;
+			let len = updateCallbackArray.length;
+			let i;
 			for(i=0;i<len;i++){
 				if (typeof updateCallbackArray[i] === 'function'){
 					updateCallbackArray[i](data);
@@ -72,7 +72,7 @@ var _this = {};
 		}
 
 		function loop(x, y, callback){
-			var i,j;
+			let i,j;
 
 			for (i=0;i<x;i++){
 				for (j=0;j<y;j++){
@@ -83,18 +83,18 @@ var _this = {};
 
 		function parseImage(sourceImageData, width, height){
 
-			var pixleCount = 0;
-			var redTotal = 0;
-			var greenTotal = 0;
-			var blueTotal = 0;
-			var brightnessTotal = 0;
+			let pixleCount = 0;
+			let redTotal = 0;
+			let greenTotal = 0;
+			let blueTotal = 0;
+			let brightnessTotal = 0;
 
 			loop(height, width, function(verticalPos, horizontalPos){
-				var offset = (verticalPos*width + horizontalPos) * 4;
-				var red = sourceImageData[offset];
-				var green = sourceImageData[offset + 1];
-				var blue = sourceImageData[offset + 2];
-				var brightness = getBrightness(red,green,blue);
+				let offset = (verticalPos*width + horizontalPos) * 4;
+				let red = sourceImageData[offset];
+				let green = sourceImageData[offset + 1];
+				let blue = sourceImageData[offset + 2];
+				let brightness = getBrightness(red,green,blue);
 
 				pixleCount++;
 
@@ -115,14 +115,14 @@ var _this = {};
 		function loadImageData( fileData, callback ){
 
 			if (Buffer.isBuffer(fileData)) {
-				var png = new PNG();
+				let png = new PNG();
 				png.parse(fileData, function (err, data) {
 				  callback(data, data.width, data.height);
 				});
 			} else {
-				var ext = fileData.substring(fileData.lastIndexOf(".")+1);
+				let ext = fileData.substring(fileData.lastIndexOf(".")+1);
 				if(ext=="png") {
-					var png = new PNG();
+					let png = new PNG();
 					fs.createReadStream(fileData)
 					  .pipe(png)
 					  .on('parsed', function() {
@@ -130,7 +130,7 @@ var _this = {};
 					  });
 				}
 				if(ext=="jpg" || ext=="jpeg") {
-					var jpegData = fs.readFileSync(fileData);
+					let jpegData = fs.readFileSync(fileData);
 					fileData = jpeg.decode(jpegData, true);
 					callback(fileData, fileData.width, fileData.height);
 				}
@@ -139,7 +139,7 @@ var _this = {};
 
 		function isColorSimilar(a, b, color){
 
-			var absDiff = Math.abs(a - b);
+			let absDiff = Math.abs(a - b);
 
 			if(typeof a === 'undefined'){
 				return false;
@@ -162,8 +162,8 @@ var _this = {};
 		}
 
 		function isPixelBrightnessSimilar(d1, d2){
-			var alpha = isColorSimilar(d1.a, d2.a, 'alpha');
-			var brightness = isColorSimilar(d1.brightness, d2.brightness, 'minBrightness');
+			let alpha = isColorSimilar(d1.a, d2.a, 'alpha');
+			let brightness = isColorSimilar(d1.brightness, d2.brightness, 'minBrightness');
 			return brightness && alpha;
 		}
 
@@ -172,17 +172,17 @@ var _this = {};
 		}
 
 		function isRGBSame(d1,d2){
-			var red = d1.r === d2.r;
-			var green = d1.g === d2.g;
-			var blue = d1.b === d2.b;
+			let red = d1.r === d2.r;
+			let green = d1.g === d2.g;
+			let blue = d1.b === d2.b;
 			return red && green && blue;
 		}
 
 		function isRGBSimilar(d1, d2){
-			var red = isColorSimilar(d1.r,d2.r,'red');
-			var green = isColorSimilar(d1.g,d2.g,'green');
-			var blue = isColorSimilar(d1.b,d2.b,'blue');
-			var alpha = isColorSimilar(d1.a, d2.a, 'alpha');
+			let red = isColorSimilar(d1.r,d2.r,'red');
+			let green = isColorSimilar(d1.g,d2.g,'green');
+			let blue = isColorSimilar(d1.b,d2.b,'blue');
+			let alpha = isColorSimilar(d1.a, d2.a, 'alpha');
 
 			return red && green && blue && alpha;
 		}
@@ -196,9 +196,9 @@ var _this = {};
 			r = r / 255;
 			g = g / 255;
 			b = b / 255;
-			var max = Math.max(r, g, b), min = Math.min(r, g, b);
-			var h;
-			var d;
+			let max = Math.max(r, g, b), min = Math.min(r, g, b);
+			let h;
+			let d;
 
 			if (max == min){
 				h = 0; // achromatic
@@ -216,14 +216,14 @@ var _this = {};
 		}
 
 		function isAntialiased(sourcePix, data, cacheSet, verticalPos, horizontalPos, width){
-			var offset;
-			var targetPix;
-			var distance = 1;
-			var i;
-			var j;
-			var hasHighContrastSibling = 0;
-			var hasSiblingWithDifferentHue = 0;
-			var hasEquivilantSibling = 0;
+			let offset;
+			let targetPix;
+			let distance = 1;
+			let i;
+			let j;
+			let hasHighContrastSibling = 0;
+			let hasSiblingWithDifferentHue = 0;
+			let hasEquivilantSibling = 0;
 
 			addHueInfo(sourcePix);
 
@@ -271,7 +271,7 @@ var _this = {};
 		}
 
 		function errorPixel(px, offset, data1, data2){
-			var data = errorPixelTransformer(data1, data2);
+			let data = errorPixelTransformer(data1, data2);
 			px[offset] = data.r;
 			px[offset + 1] = data.g;
 			px[offset + 2] = data.b;
@@ -293,11 +293,11 @@ var _this = {};
 		}
 
 		function getPixelInfo(data, offset, cacheSet){
-			var r;
-			var g;
-			var b;
-			var d;
-			var a;
+			let r;
+			let g;
+			let b;
+			let d;
+			let a;
 
 			r = data[offset];
 
@@ -328,27 +328,27 @@ var _this = {};
 
 		function analyseImages(img1, img2, width, height){
 
-			var data1 = img1.data;
-			var data2 = img2.data;
+			let data1 = img1.data;
+			let data2 = img2.data;
 
       //TODO
-      var imgd = new PNG({
+      let imgd = new PNG({
           width: img1.width,
           height: img1.height,
           deflateChunkSize: img1.deflateChunkSize,
           deflateLevel: img1.deflateLevel,
           deflateStrategy: img1.deflateStrategy,
         });
-			var targetPix = imgd.data;
+			let targetPix = imgd.data;
 
-			var mismatchCount = 0;
+			let mismatchCount = 0;
 
-			var time = Date.now();
+			let time = Date.now();
 
-			var skip;
+			let skip;
 
-      var currentRectangle = null;
-      var rectagnlesIdx = 0;
+      let currentRectangle = null;
+      let rectagnlesIdx = 0;
 
 			if(!!largeImageThreshold && ignoreAntialiasing && (width > largeImageThreshold || height > largeImageThreshold)){
 				skip = 6;
@@ -356,7 +356,7 @@ var _this = {};
 
 			loop(height, width, function(verticalPos, horizontalPos){
 
-				var offset = (verticalPos*width + horizontalPos) * 4;
+				let offset = (verticalPos*width + horizontalPos) * 4;
 
 				if(skip){ // only skip if the image isn't small
 					if(verticalPos % skip === 0 || horizontalPos % skip === 0){
@@ -372,8 +372,8 @@ var _this = {};
 					}
 				}
 
-				var pixel1 = getPixelInfo(data1, offset, 1);
-				var pixel2 = getPixelInfo(data2, offset, 2);
+				let pixel1 = getPixelInfo(data1, offset, 1);
+				let pixel2 = getPixelInfo(data2, offset, 2);
 
 				if(pixel1 === null || pixel2 === null){
 					return;
@@ -453,8 +453,8 @@ var _this = {};
 		function compare(one, two){
 
 			function onceWeHaveBoth(img){
-				var width;
-				var height;
+				let width;
+				let height;
 
         images.push(img);
 				if(images.length === 2){
@@ -483,7 +483,7 @@ var _this = {};
 
 		function getCompareApi(param){
 
-			var secondFileData,
+			let secondFileData,
 				hasMethod = typeof param === 'function';
 
 			if( !hasMethod ){
@@ -491,7 +491,7 @@ var _this = {};
 				secondFileData = param;
 			}
 
-			var self = {
+			let self = {
 				ignoreNothing: function(){
 
 					tolerance.red = 16;
@@ -548,7 +548,7 @@ var _this = {};
 
 					updateCallbackArray.push(callback);
 
-					var wrapper = function(){
+					let wrapper = function(){
 						compare(fileData, secondFileData);
 					};
 
@@ -576,8 +576,8 @@ var _this = {};
 	};
 
 	_this['resemble'].outputSettings = function(options){
-		var key;
-		var undefined;
+		let key;
+		let undefined;
 
 		if(options.errorColor){
 			for (key in options.errorColor) {
