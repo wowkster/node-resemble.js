@@ -1,3 +1,8 @@
+#1.2.0
+
+  * updated jpeg-js and pngjs dependencies
+  * updated credits README.md
+
 #0.2.0
 
   * added support for jpeg
@@ -18,4 +23,4 @@
 #0.0.0
   * initial commit (started form resemble sha 5ce379b)
   * rewrite resence to node.js (with only pngjs dependency)
-  * added exampl
+  * added example
