@@ -1,6 +1,6 @@
 {
   "name": "@wowkster/resemble",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Image analysis and comparison for nodejs with support for async await",
   "main": "resemble.js",
   "scripts": {

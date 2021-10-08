@@ -25,7 +25,7 @@ const api = resemble(fileData).onComplete(function (data) {
         blue: 255,
         brightness: 255
       }
-	  */
+   */
 })
 ```
 
@@ -72,12 +72,12 @@ const data = await resemble(file).compareTo(file2).ignoreColors().async()
 console.log(data)
 
 /*
-	{
-	  misMatchPercentage : 100, // %
-	  isSameDimensions: true, // or false
-	  dimensionDifference: { width: 0, height: -1 }, // defined if dimensions are not the same
-	  getImageDataUrl: function(){}
-	}
+ {
+   misMatchPercentage : 100, // %
+   isSameDimensions: true, // or false
+   dimensionDifference: { width: 0, height: -1 }, // defined if dimensions are not the same
+   getImageDataUrl: function(){}
+ }
 */
 ```
 
@@ -108,8 +108,8 @@ resemble.outputSettings({
 
 Credits:
 
--   Created by [James Cryer](https://github.com/jamescryer) and the Huddle development team.
--   [Lukas Svoboda](https://github.com/lksv) - modification for node.js
--   [Mirza Zeyrek](https://github.com/mirzazeyrek) - jpeg support
--   [LarryG](https://github.com/larryg01) - dependency updates
--   [Wowkster](https://github.com/wowkster) - updated for async/await
+- Created by [James Cryer](https://github.com/jamescryer) and the Huddle development team.
+- [Lukas Svoboda](https://github.com/lksv) - modification for node.js
+- [Mirza Zeyrek](https://github.com/mirzazeyrek) - jpeg support
+- [LarryG](https://github.com/larryg01) - dependency updates
+- [Wowkster](https://github.com/wowkster) - updated for async/await
