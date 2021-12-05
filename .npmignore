@@ -1,7 +1,12 @@
 npm-debug.log
 
 lib/
-
+example/
+tsconfig.json
 index.html
 bower.json
 README.md
+
+gulpfile.js
+index.spec.js
+CHANGELOG.md
