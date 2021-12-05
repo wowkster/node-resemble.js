@@ -1,5 +1,7 @@
 npm-debug.log
-libs
+
+lib/
+
 index.html
 bower.json
 README.md

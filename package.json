@@ -1,42 +1,45 @@
 {
-  "name": "@wowkster/resemble",
-  "version": "1.2.2",
-  "description": "Image analysis and comparison for nodejs with support for async await",
-  "main": "resemble.js",
-  "scripts": {
-    "test": "gulp test"
-  },
-  "precommit": [
-    "build"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wowkster/node-resemble.js.git"
-  },
-  "keywords": [
-    "comparison",
-    "image",
-    "diff",
-    "compare"
-  ],
-  "author": "Wowkster <wowkster@wowkster.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/wowkster/node-resemble.js/issues"
-  },
-  "homepage": "https://github.com/wowkster/node-resemble.js",
-  "dependencies": {
-    "jpeg-js": "^0.4.2",
-    "pngjs": "^6.0.0"
-  },
-  "devDependencies": {
-    "@wowkster/prettier-config": "^1.0.1",
-    "gulp": "^4.0.2",
-    "gulp-jasmine": "^4.0.0",
-    "gulp-util": "^3.0.8"
-  },
-  "prettier": "@wowkster/prettier-config",
-  "directories": {
-    "example": "example"
-  }
+    "name": "@wowkster/resemble",
+    "version": "1.2.2",
+    "description": "Image analysis and comparison for nodejs with support for async await",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "test": "gulp test",
+        "build": "tsc"
+    },
+    "precommit": [
+        "build"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wowkster/resemble.git"
+    },
+    "keywords": [
+        "comparison",
+        "image",
+        "diff",
+        "compare"
+    ],
+    "author": "Wowkster <wowkster@wowkster.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/wowkster/resemble/issues"
+    },
+    "homepage": "https://github.com/wowkster/resemble",
+    "dependencies": {
+        "jpeg-js": "^0.4.2",
+        "pngjs": "^6.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^16.11.11",
+        "@wowkster/prettier-config": "^1.0.1",
+        "gulp": "^4.0.2",
+        "gulp-jasmine": "^4.0.0",
+        "gulp-util": "^3.0.8"
+    },
+    "prettier": "@wowkster/prettier-config",
+    "directories": {
+        "example": "example"
+    }
 }
