@@ -10,7 +10,7 @@ describe('node-resemble.js', function() {
   var OPTIMISATION_SKIP_STEP = 6;
   var DEFAULT_LARGE_IMAGE_THRESHOLD = 1200;
 
-  var resemble = require('./resemble.js');
+  var resemble = require('./dist/index');
 
   describe('largeImageThreshold', function() {
     describe('when unset', function() {

@@ -4,9 +4,9 @@ URL: https://github.com/Huddle/Resemble.js
 */
 'use strict'
 
-const PNG = require('pngjs').PNG
-const fs = require('fs')
-const jpeg = require('jpeg-js')
+import { PNG } from 'pngjs'
+import fs from 'fs'
+import jpeg from 'jpeg-js'
 
 //keeping wrong indentation and '_this' for better diff with origin resemble.js
 let _this = {}
@@ -43,8 +43,23 @@ let errorPixelTransform = {
 let errorPixelTransformer = errorPixelTransform.flat
 let largeImageThreshold = 1200
 
+interface Data {
+    rawMisMatchPercentage?: number
+    misMatchPercentage?: any
+    matchPercentage?: number
+    analysisTime?: number
+    getDiffImage?: () => any
+    getDiffImageAsJPEG?: (quality: any) => Buffer
+    isSameDimensions?: boolean
+    dimensionDifference?: { width: number; height: number }
+    red?
+    green?
+    blue?
+    brightness?
+}
+
 function resemble(fileData) {
-    let data = {}
+    let data: Data = {}
     let images = []
     let updateCallbackArray = []
 
@@ -130,7 +145,7 @@ function resemble(fileData) {
             }
             if (ext == 'jpg' || ext == 'jpeg') {
                 let jpegData = fs.readFileSync(fileData)
-                fileData = jpeg.decode(jpegData, true)
+                fileData = jpeg.decode(jpegData)
                 callback(fileData, fileData.width, fileData.height)
             }
         }
@@ -628,9 +643,8 @@ resemble.outputSettings = function (options) {
     return this
 }
 
-const compareImg = async (inputImage, compareWith) => {
+resemble.compareImg = async (inputImage, compareWith) => {
     return await resemble(inputImage).compareTo(compareWith).ignoreNothing().async()
-}	
+}
 
-module.exports = resemble
-exports.compareImg = compareImg
+export = resemble
